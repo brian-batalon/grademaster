@@ -6,3 +6,4 @@ sendgrid
 python-dotenv
 psycopg2-binary
 werkzeug
+gunicorn
