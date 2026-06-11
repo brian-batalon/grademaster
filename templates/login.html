@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeMaster - Login</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .login-card .logo i {
+            font-size: 48px;
+            color: #3b82f6;
+        }
+        .login-card h3 {
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .login-card .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid #e2e8f0;
+        }
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            background: #3b82f6;
+            border: none;
+            color: #fff;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-login:hover { background: #2563eb; }
+        .btn-login:disabled { opacity: 0.7; cursor: not-allowed; }
+        .toggle-text {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .toggle-text a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .toggle-text a:hover { text-decoration: underline; }
+        .error-msg {
+            color: #ef4444;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .success-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        .success-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            animation: scaleIn 0.4s ease;
+            max-width: 380px;
+            width: 90%;
+        }
+        .success-card .check-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: popIn 0.5s ease 0.2s both;
+        }
+        .success-card .check-icon i {
+            font-size: 40px;
+        }
+        .success-card h4 {
+            font-weight: 700;
+            margin-bottom: 8px;
+            animation: slideUp 0.5s ease 0.3s both;
+        }
+        .success-card p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+            animation: slideUp 0.5s ease 0.4s both;
+        }
+        
+        .confetti {
+            position: fixed;
+            top: -10px;
+            z-index: 9998;
+            animation: fall linear forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ─── MOBILE ─── */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+                align-items: center;
+                justify-content: center;
+            }
+            .login-card {
+                padding: 28px 20px;
+                margin: 0;
+                max-width: 100%;
+                border-radius: 16px;
+            }
+            .login-card .logo i {
+                font-size: 36px;
+            }
+            .login-card h3 {
+                font-size: 18px;
+            }
+            .login-card .subtitle {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+            .form-control {
+                padding: 10px 12px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+            .btn-login {
+                padding: 10px;
+                font-size: 14px;
+                border-radius: 8px;
+            }
+            .toggle-text {
+                font-size: 12px;
+                margin-top: 12px;
+            }
+            .success-card {
+                padding: 24px 18px;
+                margin: 12px;
+            }
+            .success-card .check-icon {
+                width: 56px;
+                height: 56px;
+            }
+            .success-card .check-icon i {
+                font-size: 28px;
+            }
+            .success-card h4 {
+                font-size: 16px;
+            }
+            .success-card p {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card" id="loginCard">
+        <div class="logo">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <h3 id="formTitle">Welcome to GradeMaster</h3>
+        <p class="subtitle" id="formSubtitle">Sign in to your account</p>
+        
+        <div id="displayNameGroup" style="display:none;">
+            <label class="form-label">Display Name</label>
+            <input type="text" class="form-control mb-3" id="displayName" placeholder="Your name">
+        </div>
+        
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control mb-3" id="username" placeholder="Enter username">
+        
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control mb-3" id="password" placeholder="Enter password">
+        
+        <div class="error-msg" id="errorMsg"></div>
+        
+        <button class="btn btn-login mt-2" id="submitBtn">Sign In</button>
+        
+        <p class="toggle-text">
+            <span id="toggleText">Don't have an account?</span>
+            <a id="toggleLink" onclick="toggleMode()">Register</a>
+        </p>
+    </div>
+
+    <script>
+        let isLogin = true;
+        
+        function toggleMode() {
+            isLogin = !isLogin;
+            if (isLogin) {
+                document.getElementById('formTitle').textContent = 'Welcome to GradeMaster';
+                document.getElementById('formSubtitle').textContent = 'Sign in to your account';
+                document.getElementById('submitBtn').textContent = 'Sign In';
+                document.getElementById('displayNameGroup').style.display = 'none';
+                document.getElementById('toggleText').textContent = "Don't have an account?";
+                document.getElementById('toggleLink').textContent = 'Register';
+            } else {
+                document.getElementById('formTitle').textContent = 'Create Account';
+                document.getElementById('formSubtitle').textContent = 'Register a new account';
+                document.getElementById('submitBtn').textContent = 'Register';
+                document.getElementById('displayNameGroup').style.display = 'block';
+                document.getElementById('toggleText').textContent = 'Already have an account?';
+                document.getElementById('toggleLink').textContent = 'Sign In';
+            }
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+        
+        function spawnConfetti() {
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3500);
+            }
+        }
+        
+        function showSuccess(displayName, isLoginSuccess = false) {
+            const overlay = document.createElement('div');
+            overlay.className = 'success-overlay';
+            const title = isLoginSuccess ? 'Welcome Back!' : 'Account Created!';
+            const message = isLoginSuccess 
+                ? `Good to see you again, <strong>${displayName}</strong>! Loading your dashboard...`
+                : `Welcome, <strong>${displayName}</strong>! Redirecting to your dashboard...`;
+            const iconBg = isLoginSuccess ? '#dbeafe' : '#d1fae5';
+            const iconColor = isLoginSuccess ? '#3b82f6' : '#10b981';
+            const iconClass = isLoginSuccess ? 'hand-wave' : 'check-lg';
+            overlay.innerHTML = `
+                <div class="success-card">
+                    <div class="check-icon" style="background:${iconBg};">
+                        <i class="bi bi-${iconClass}" style="color:${iconColor};"></i>
+                    </div>
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                    <div class="spinner"></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            spawnConfetti();
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+        
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const displayName = document.getElementById('displayName').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = document.getElementById('submitBtn');
+            
+            if (!username || !password) {
+                errorMsg.textContent = 'Please fill all fields';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:#fff;margin-right:8px;"></span> Loading...';
+            
+            const url = isLogin ? '/login' : '/register';
+            const body = isLogin ? { username, password } : { username, password, display_name: displayName || username };
+            
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                showSuccess(data.user.display_name, isLogin);
+            } else {
+                errorMsg.textContent = data.message;
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = isLogin ? 'Sign In' : 'Register';
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('submitBtn').click();
+        });
+    </script>
+</body>
+</html>
