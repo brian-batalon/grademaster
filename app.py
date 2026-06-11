@@ -460,4 +460,5 @@ def student_to_dict(student):
             'remark': student.remark or '', 'status': student.status or ''}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
