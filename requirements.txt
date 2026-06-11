@@ -2,3 +2,7 @@ flask
 openpyxl
 flask-sqlalchemy
 flask-login
+sendgrid
+python-dotenv
+psycopg2-binary
+werkzeug
