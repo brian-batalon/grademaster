@@ -3,20 +3,21 @@ from flask import Flask, render_template, request, jsonify, send_file, send_from
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from io import BytesIO
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import sendgrid
+from sendgrid.helpers.mail import Mail, Email, To, Content
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import re
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.ouqtqssvdxgalojnckbs:2026grademas@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'grademaster-secret-key-2026'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'grademaster-secret-key-2026')
 db = SQLAlchemy(app)
 
 # Flask-Login setup
@@ -24,11 +25,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Email Configuration
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "aztechworx@gmail.com"
-SENDER_PASSWORD = "axduiximoeaonhel"
+# SendGrid Configuration
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'aztechworx@gmail.com')
 
 # Database Models
 class User(UserMixin, db.Model):
@@ -401,10 +400,14 @@ def email_student(section_name):
     <tr><td><strong>Remark:</strong></td><td>{student.remark or 'N/A'}</td></tr>
     <tr><td><strong>Status:</strong></td><td>{student.status or 'N/A'}</td></tr></table>"""
     try:
-        msg = MIMEMultipart(); msg['From'] = SENDER_EMAIL; msg['To'] = student.email; msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'html'))
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls(); server.login(SENDER_EMAIL, SENDER_PASSWORD); server.send_message(msg)
+        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        message = Mail(
+            from_email=Email(SENDER_EMAIL, "GradeMaster"),
+            to_emails=To(student.email),
+            subject=subject,
+            html_content=body
+        )
+        response = sg.send(message)
         return jsonify({'status': 'success', 'message': f'Email sent to {student.email}'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
